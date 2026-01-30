@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RevoShop - Milestone 3 (E-Commerce Platform)
 
-## Getting Started
+RevoShop adalah aplikasi e-commerce modern yang dibangun menggunakan **Next.js 15+** dengan **App Router** dan **TypeScript**. Proyek ini mendemonstrasikan implementasi navigasi dinamis, pengambilan data di sisi server (Server Components), dan desain responsif.
 
-First, run the development server:
+## 🚀 Live Demo
+under construction
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📋 Fitur Utama (Module 4)
+- **Product Listing**: Menampilkan katalog produk secara dinamis menggunakan data dari FakeStoreAPI.
+- **Dynamic Routing**: Sistem navigasi detail produk menggunakan rute dinamis `[id]`.
+- **Server Components**: Implementasi data fetching yang efisien di sisi server untuk performa dan SEO yang lebih baik.
+- **Responsive Navbar & Layout**: Navigasi yang konsisten di seluruh halaman menggunakan sistem Layout Next.js.
+- **Static Pages**: Halaman FAQ yang di-generate secara statis (SSG).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Teknologi yang Digunakan
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Bahasa**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Data Source**: [FakeStoreAPI](https://fakestoreapi.com/)
+- **Deployment**: rencananya di [Vercel](https://vercel.com/)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📖 Cara Menjalankan Secara Lokal
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Clone repository ini:
+   ```bash
+   git clone [https://github.com/Revou-FSSE-Oct25/milestone-3-tommypoernomo.git](https://github.com/Revou-FSSE-Oct25/milestone-3-tommypoernomo.git)
 
-## Learn More
+    Masuk ke direktori proyek:
+    Bash
 
-To learn more about Next.js, take a look at the following resources:
+    cd milestone-3-tommypoernomo
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    Instal dependensi:
+    Bash
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    npm install
 
-## Deploy on Vercel
+    Jalankan server pengembangan:
+    Bash
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    npm run dev
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    Buka http://localhost:3000 di browser Anda.
+
+📂 Struktur Folder Utama
+
+    src/app/: Berisi rute aplikasi (pages, layouts, dan logic routing).
+
+    src/app/product/[id]/: Implementasi rute dinamis untuk detail produk.
+
+    src/components/: Komponen UI yang dapat digunakan kembali (Navbar, ProductCard).
+
+Disusun oleh: Tommy Poernomo
