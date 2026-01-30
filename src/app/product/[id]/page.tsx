@@ -1,37 +1,31 @@
-// Halaman Detail Produk
-export default function ProductDetail({ product, error }) {
-  if (error) return <div className="text-center p-10">Produk tidak ditemukan!</div>;
+// Perhatikan penambahan Promise pada tipe params
+export default async function ProductDetailPage({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}) {
+  // Kita harus me-await params-nya dulu di Next.js 15
+  const { id } = await params;
 
-  return (
-    <div className="container mx-auto p-8">
-      <div className="flex flex-col md:flex-row gap-8">
-        <img src={product.image} alt={product.title} className="w-full md:w-1/3 object-contain h-80" />
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-4">{product.title}</h1>
-          <p className="text-gray-600 mb-6">{product.description}</p>
-          <p className="text-xl font-semibold text-blue-600 mb-6">${product.price}</p>
-          <button className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
-            Add to Cart
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Implementasi SSR sesuai Brief
-export async function getServerSideProps(context) {
-  const { id } = context.params;
   try {
     const res = await fetch(`https://fakestoreapi.com/products/${id}`);
-    const product = await res.json();
-
-    if (!product) {
-      return { notFound: true };
+    
+    if (!res.ok) {
+      throw new Error("Gagal mengambil data");
     }
 
-    return { props: { product } };
-  } catch (err) {
-    return { props: { error: true } };
+    const product = await res.json();
+
+    return (
+      <main className="container mx-auto p-10">
+        <h1 className="text-2xl font-bold">{product.title}</h1>
+        <img src={product.image} alt={product.title} className="w-64 my-4" />
+        <p>{product.description}</p>
+        <p className="text-xl font-bold mt-4">${product.price}</p>
+      </main>
+    );
+  } catch (error) {
+    console.error(error);
+    return <div className="p-10 text-center">Terjadi kesalahan koneksi saat memuat produk.</div>;
   }
 }
