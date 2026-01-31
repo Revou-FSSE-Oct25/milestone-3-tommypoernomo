@@ -1,13 +1,12 @@
 import Link from 'next/link';
 
-// Kita definisikan struktur data produk agar TypeScript tidak protes
+// Struktur data Platzi
 interface Product {
   id: number;
   title: string;
   price: number;
   description: string;
-  category: string;
-  image: string;
+  images: string[]; // Platzi menggunakan array string untuk gambar
 }
 
 interface ProductCardProps {
@@ -19,7 +18,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     <div className="border rounded-xl p-4 shadow-sm hover:shadow-md transition bg-white flex flex-col h-full">
       <div className="h-48 flex items-center justify-center mb-4 p-2">
         <img 
-          src={product.image} 
+          src={product.images[0]} // Ambil gambar pertama dari array
           alt={product.title} 
           className="max-h-full max-w-full object-contain" 
         />
