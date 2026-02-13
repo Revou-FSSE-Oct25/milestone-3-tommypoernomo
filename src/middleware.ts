@@ -3,12 +3,12 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   // Ambil data user dari cookies (untuk middleware, lebih aman pakai cookies)
-  // Tapi untuk tugas ini, kita bisa simulasi pengecekan sederhana
+  // Simulasi pengecekan sederhana
   const authCookie = request.cookies.get('next-auth.session-token'); 
   
   // Jika mencoba masuk ke /admin tapi tidak ada "session"
   if (request.nextUrl.pathname.startsWith('/admin')) {
-    // Untuk keperluan tugas, Bapak bisa cek keberadaan token di sini
+    // Cek keberadaan token di sini
     // Jika tidak ada, arahkan ke login
     // return NextResponse.redirect(new URL('/login', request.url));
   }
