@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
-import Skeleton from '../components/Skeleton';
+import Skeleton from '@/components/Skeleton';
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
