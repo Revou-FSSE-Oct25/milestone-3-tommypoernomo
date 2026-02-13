@@ -1,6 +1,6 @@
 import AddToCartBtn from "@/components/AddToCartBtn";
 
-// Feedback TL: Membuat SSR eksplisit
+// Membuat SSR eksplisit/Mendefinisikan rute sebagai dynamic secara eksplisit untuk SSR
 export const dynamic = 'force-dynamic';
 
 export default async function ProductDetailPage({ 
@@ -9,9 +9,11 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }> 
 }) {
   const { id } = await params;
+  // Menunggu selama 3 detik sebelum lanjut ke proses berikutnya
+// await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
-    // Feedback TL: Menggunakan cache 'no-store' untuk memastikan SSR murni
+    // Fetching data produk di sisi server dengan no-store cache
     const res = await fetch(`https://api.escuelajs.co/api/v1/products/${id}`, {
         cache: 'no-store'
     });

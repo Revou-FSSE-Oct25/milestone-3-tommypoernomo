@@ -23,6 +23,7 @@ export const useStore = create<StoreState>()(
     (set) => ({
       cart: [],
       user: null,
+      // Menangani penambahan item ke keranjang dan update quantity jika produk sudah ada
       addToCart: (product) => set((state) => {
         const existing = state.cart.find((item) => item.id === product.id);
         if (existing) {
@@ -34,12 +35,13 @@ export const useStore = create<StoreState>()(
         }
         return { cart: [...state.cart, { ...product, quantity: 1 }] };
       }),
+      // Menghapus produk dari keranjang berdasarkan ID
       removeFromCart: (id) => set((state) => ({
         cart: state.cart.filter((item) => item.id !== id),
       })),
       setUser: (user) => set({ user }),
       logout: () => set({ user: null, cart: [] }),
     }),
-    { name: 'revoshop-storage' } // Otomatis simpan ke LocalStorage (Syarat Module 5)
+    { name: 'revoshop-storage' } // Persistence menggunakan localStorage
   )
 );
