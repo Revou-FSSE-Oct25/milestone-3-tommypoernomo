@@ -28,9 +28,11 @@ export default function Navbar() {
           <Link href="/faq" className="text-sm font-medium hover:text-blue-600 transition">
             FAQ
           </Link>
+          {user?.email === 'john@mail.com' && (
           <Link href="/admin" className="text-sm font-medium text-red-500 hover:text-red-700 transition">
             Admin
           </Link>
+          )}
 
           {/* Ikon Keranjang dengan Badge Angka */}
           <Link href="/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition">

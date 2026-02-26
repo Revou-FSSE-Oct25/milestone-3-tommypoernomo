@@ -1,153 +1,102 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useStore } from '@/store/useStore';
+import { useProducts } from '@/hooks/useProducts';
+import { useAppStore, StoreProvider } from '@/context/StoreProvider';
 import { useRouter } from 'next/navigation';
 
-export default function AdminPage() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [newProduct, setNewProduct] = useState({ 
-    title: '', 
-    price: 0, 
-    description: '', 
-    categoryId: 1, 
-    images: ["https://api.lorem.space/image/watch?w=640&h=480"] 
-  });
-
-  const user = useStore((state) => state.user);
+function AdminContent() {
+  const { products, loading, refetch } = useProducts();
+  const { user } = useAppStore();
   const router = useRouter();
 
-  // Proteksi rute: Memastikan hanya user terautentikasi yang bisa mengakses dashboard
+  const [newProduct, setNewProduct] = useState({ title: '', price: 0, description: '', categoryId: 1, images: ["https://api.lorem.space/image/watch?w=640&h=480"] });
+  const [editingProduct, setEditingProduct] = useState<any>(null); // State untuk Edit
+
   useEffect(() => {
-    if (!user) {
+    if (!user || user.email !== 'john@mail.com') {
       router.push('/login');
-    } else {
-      fetchProducts();
     }
   }, [user, router]);
 
-  // Mengambil daftar produk dari API
-  const fetchProducts = async () => {
-    try {
-      const res = await fetch('https://api.escuelajs.co/api/v1/products?offset=0&limit=10');
-      const data = await res.json();
-      setProducts(data);
-    } catch (err) {
-      console.error("Failed to fetch products", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Menangani penambahan produk baru dengan validasi field
-  const handleAddProduct = async (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const res = await fetch('https://api.escuelajs.co/api/v1/products/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newProduct),
-      });
-
-      if (res.ok) {
-        alert('Success: Product added successfully');
-        setNewProduct({ 
-          title: '', 
-          price: 0, 
-          description: '', 
-          categoryId: 1, 
-          images: ["https://api.lorem.space/image/watch?w=640&h=480"] 
-        });
-        fetchProducts();
-      } else {
-        const errorData = await res.json();
-        alert(`Error: ${errorData.message}`);
-      }
-    } catch (err) {
-      alert('Network error while adding product');
-    }
+    const res = await fetch('/api/products', { method: 'POST', body: JSON.stringify(newProduct) });
+    if (res.ok) { alert('Produk ditambahkan!'); setNewProduct({ title: '', price: 0, description: '', categoryId: 1, images: ["https://api.lorem.space/image/watch?w=640&h=480"] }); refetch(); }
   };
 
-  // Menghapus produk berdasarkan ID melalui API
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await fetch(`/api/products/${editingProduct.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editingProduct),
+    });
+    if (res.ok) { alert('Produk diupdate!'); setEditingProduct(null); refetch(); }
+  };
+
   const handleDelete = async (id: number) => {
-    if (confirm('Are you sure you want to delete this product?')) {
-      try {
-        const res = await fetch(`https://api.escuelajs.co/api/v1/products/${id}`, {
-          method: 'DELETE',
-        });
-        if (res.ok) {
-          alert('Product deleted');
-          setProducts(products.filter(p => p.id !== id));
-        }
-      } catch (err) {
-        alert('Error deleting product');
-      }
+    if (confirm('Hapus produk ini?')) {
+      await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      refetch();
     }
   };
 
-  // Menampilkan state loading jika data sedang diproses
-  if (loading) return <div className="p-10 text-center font-medium">Loading Admin Dashboard...</div>;
-  
-  // Mencegah rendering konten jika user tidak terautentikasi
+  if (loading) return <div className="p-10 text-center">Loading...</div>;
   if (!user) return null;
 
   return (
     <main className="container mx-auto p-10">
-      <h1 className="text-3xl font-bold mb-8 text-red-600">Admin Dashboard</h1>
+      <h1 className="text-3xl font-bold text-red-600 mb-10">Admin Dashboard</h1>
 
-      {/* Form Section: Create Operation */}
-      <section className="bg-white p-6 rounded-xl border shadow-sm mb-10">
-        <h2 className="text-xl font-bold mb-4">Add New Product</h2>
-        <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input 
-            type="text" placeholder="Product Title" className="border p-2 rounded" required 
-            value={newProduct.title} onChange={(e) => setNewProduct({...newProduct, title: e.target.value})} 
-          />
-          <input 
-            type="number" placeholder="Price" className="border p-2 rounded" required 
-            value={newProduct.price || ''} onChange={(e) => setNewProduct({...newProduct, price: Number(e.target.value)})} 
-          />
-          <textarea 
-            placeholder="Product Description" className="border p-2 rounded md:col-span-2" required 
-            value={newProduct.description} onChange={(e) => setNewProduct({...newProduct, description: e.target.value})} 
-          />
-          <button type="submit" className="bg-green-600 text-white font-bold py-3 rounded md:col-span-2 hover:bg-green-700 transition">
-            Save Product
-          </button>
-        </form>
-      </section>
+      {/* FORM TAMBAH */}
+      <form onSubmit={handleAdd} className="bg-white p-6 rounded-xl border mb-10 grid gap-4 shadow-sm">
+        <h2 className="font-bold">Tambah Produk</h2>
+        <input type="text" placeholder="Title" className="border p-2 rounded" value={newProduct.title} onChange={e => setNewProduct({...newProduct, title: e.target.value})} required />
+        <input type="number" placeholder="Price" className="border p-2 rounded" value={newProduct.price || ''} onChange={e => setNewProduct({...newProduct, price: Number(e.target.value)})} required />
+        <button className="bg-green-600 text-white p-3 rounded font-bold hover:bg-green-700">Simpan Produk</button>
+      </form>
 
-      {/* Table Section: Read and Delete Operations */}
-      <section className="bg-white rounded-xl border shadow-sm overflow-hidden">
+      {/* MODAL EDIT */}
+      {editingProduct && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-8 rounded-2xl max-w-lg w-full shadow-2xl">
+            <h2 className="text-xl font-bold mb-4 text-blue-600">Edit Produk</h2>
+            <form onSubmit={handleUpdate} className="flex flex-col gap-4">
+              <input className="border p-3 rounded-lg" value={editingProduct.title} onChange={e => setEditingProduct({...editingProduct, title: e.target.value})} />
+              <input className="border p-3 rounded-lg" type="number" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: Number(e.target.value)})} />
+              <div className="flex gap-3">
+                <button type="submit" className="bg-blue-600 text-white p-3 rounded-lg flex-1 font-bold">Update</button>
+                <button type="button" onClick={() => setEditingProduct(null)} className="bg-gray-200 p-3 rounded-lg flex-1">Batal</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* TABEL PRODUK */}
+      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="p-4">ID</th>
-              <th className="p-4">Title</th>
-              <th className="p-4">Price</th>
-              <th className="p-4 text-center">Actions</th>
-            </tr>
+          <thead className="bg-gray-50 uppercase text-xs font-bold text-gray-500">
+            <tr><th className="p-5">Produk</th><th className="p-5 text-center">Aksi</th></tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="border-b hover:bg-gray-50">
-                <td className="p-4">{product.id}</td>
-                <td className="p-4 font-medium">{product.title}</td>
-                <td className="p-4">${product.price}</td>
-                <td className="p-4 text-center">
-                  <button 
-                    onClick={() => handleDelete(product.id)} 
-                    className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition"
-                  >
-                    Delete
-                  </button>
+            {products.slice(0, 10).map((p: any) => (
+              <tr key={p.id} className="border-t hover:bg-gray-50 transition">
+                <td className="p-5 font-medium">{p.title}</td>
+                <td className="p-5 text-center flex justify-center gap-4">
+                  <button onClick={() => setEditingProduct(p)} className="text-blue-600 font-bold hover:underline">Edit</button>
+                  <button onClick={() => handleDelete(p.id)} className="text-red-500 font-bold hover:underline">Hapus</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      </section>
+      </div>
     </main>
   );
+}
+
+export default function AdminPage() {
+  return <StoreProvider><AdminContent /></StoreProvider>;
 }
